@@ -12,8 +12,6 @@ $passwort = "";
 $link = mysqli_connect($host,$user,$passwort) or die ("could not connect");
 $connect2 = mysqli_select_db($link,$database) or die ("could not select");
 
-
-
 $query = "SELECT COUNT(empid) AS total1 FROM pro_emp WHERE empid = '1'";
 $res = mysqli_query($link,$query);
 $values = mysqli_fetch_assoc($res);
@@ -39,34 +37,22 @@ $query2 = "SELECT * FROM employee";
 $res2 = mysqli_query($link,$query2);
 $values2 = mysqli_fetch_assoc($res2);
 
+$salaryquery = "SELECT SUM(salary) AS total FROM employee";
+$salaryres = mysqli_query($link,$salaryquery);
+//$salaryval = mysqli_fetch_assoc($salaryres);
+
+
+$salaryval = mysqli_fetch_array($salaryres);
+$sum = $salaryval['total'];
+
 
 
   while($row = mysqli_fetch_array($res2)) {
    $names[] = $row['empname'];
    $dpt[] = $row['dptname'];
+   $gender[] = $row['gender'];
+   $salary[] = $row['salary'];
 }
-/*
-foreach($names as $names) {
-	echo"<br>";
-	echo "$names";
-	echo"<br>";
-}
-*/
-
-
-
-
-
-/*
-while($row = mysqli_fetch_array($res))
-	
-	{
-		echo $row;
-	}
-
-//echo "<h1>$res</h1>";
-*/
-
 
 ?>
 
@@ -79,7 +65,7 @@ while($row = mysqli_fetch_array($res))
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Semantic Ui Project</title>
+    <title>Semantic UI Project</title>
     
     <link rel="stylesheet"  href="css/semantic.css">
     <link rel="stylesheet"  href="css/styles.css">   
@@ -91,9 +77,21 @@ while($row = mysqli_fetch_array($res))
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="http://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>	
 	<script>
-			$(document).ready( function () {
+		/*	$(document).ready( function () {
 			$('#myTable').DataTable();
-		    } );
+			
+			
+				} );*/
+				
+				
+				
+			$(document).ready(function() {
+				$('#myTable').DataTable( {
+					"scrollY":        "200px",
+				//	"scrollCollapse": true,
+				//	"paging":         false
+				} );	
+			} );
 	</script>
 	
     <script src="semantic.js"></script>
@@ -120,6 +118,10 @@ while($row = mysqli_fetch_array($res))
 
 </head>
  <body>
+	<?php
+		@ob_start();
+		
+	?>
     <script src="script.js"></script>
 
 <!--     <link rel="stylesheet" type="text/css" href="css/semantic2.min.css"/>
@@ -129,9 +131,11 @@ while($row = mysqli_fetch_array($res))
         <div id="home" class="ui vertical sc-main center aligned segment">
             <div class="ui container">
                 <div class="ui large sc-bar secondary inverted pointed fixed menu">
-                    <a class="toc item">
-                        <i class="sidebar icon"></i>
-                    </a>
+                   <!-- <a class="toc item">
+                        <i class="sidebar icdon"></i>
+                    </a> -->
+					<div class="left item">
+                        <a class="item login" style="border-radius: 30px!important;" onclick="loginfnc()">Admin Login</a></div>
                     
                     <div class="right item">
                         <a class="item" href="#home">Home</a>
@@ -139,7 +143,6 @@ while($row = mysqli_fetch_array($res))
                         <a class="item" href="#portfolio">Portfolio</a> 
                         <a class="item" href="#about">About</a> -->
                         <a class="item" href="#team">Team</a>
-
      
                         <a class="item" href="#contact">Contact</a>
                     </div>
@@ -149,7 +152,7 @@ while($row = mysqli_fetch_array($res))
                 <h1 class="ui inverted header">Semantic App</h1>
                 <p class="ui invereted header">Employee information and Density Tracking</p>
                 <a class="ui huge primary right labeled icon button sc-button" onclick="myButtonFunction()">Start Button<i class="angle down icon"></i></a>
-           
+			
             
             </div>
             
@@ -184,7 +187,7 @@ while($row = mysqli_fetch_array($res))
                     </div>
                     </div>
                     <div class="column">
-					<h2 class="ui header sc-h3" id="density">Ü.Akar</h2>
+					<h2 class="ui header sc-h3" id="density">U.Akar</h2>
                      <div class="progress2">
                       <div class="precent2"> 100 Works</div>
                       <div class="circle2"></div>
@@ -350,13 +353,73 @@ while($row = mysqli_fetch_array($res))
                   </div>
               </div>
             </div>
+			
+            <div class="ui modal modal_edit">
+			
+				<div class="image content">
+				<form action ="" method="POST">
+					<label class="labels">ID :   </label><input type="text" name="id" id="dis_id" disabled="disabled"/><br/>
+					<label class="labels">NAME : </label><input type="text" name="name" id="dis_name" disabled="disabled"/><br/>
+					<label class="labels">DEPT : </label>
+					<?php
+					$qdep = "SELECT * FROM department";
+					$qres = mysqli_query($link,$qdep);
+					echo '<select name="unitid" onchange="" id="dis_dep" class="drop">';
+					while ($row = mysqli_fetch_assoc($qres)) {
+					echo '<option id="dis_dep">'.$row['depname'].'</option>';
+					}
+					echo '</select>';
+					echo '<br/>';
+					?>
+					<label class="labels">GENDER:</label><input type="text" name="gender" id="dis_gender" disabled="disabled"/><br/>
+					<label class="labels">SALARY:</label><input type="text" name="salary" id="dis_sal"/><br/>
+					
+					<label class="labels"></label><input class="updt" id="updt" type="button" name="update" value="UPDATE DATA" onclick="editselectdrp()" style="margin-left: 30px!important;" /><label id="image">LOADING...</label>
+				</form>
+				<!--<img class ="ui image" src="img/small_slgo.png"> -->
+			<?php
+			
+				$qdep = "SELECT * FROM department";
+				$qres = mysqli_query($link,$qdep);
+
+			?>
+					
+				</div>
+			
+            </div>			
             
+			<div class="ui modal modal_login">
+				<div class="image content">
+				<form action ="" method="POST">
+				
+					<label class="labels">MAIL :   </label><input type="text" name="mail" id="mail_id"/><br/>
+					<label class="labels">PASSW. : </label><input type="text" name="passw" id="psw_id"/><br/>
+					<label class="labels"></label><input class="loginbt" id="loginbt"type="button" value="LOGIN" onclick="login()"/><label class="signlabel" id="signlabel" onclick="signup()" onmouseover="" style="cursor: pointer;">Sign up</label><br/>
+					
+				</form>
+				</div>
+			</div>
+			<div class="ui modal modal_signup">
+				<div class="image content">
+				<form action ="" method="POST">
+				
+					<label class="labels">MAIL :   </label><input type="text" name="mail2" id="mail_id2"/><br/>
+					<label class="labels">PASSW. : </label><input type="text" name="passw2" id="psw_id2"/><br/>
+					<label class="labels"></label><input class="loginbt" id="signupbt"type="button" value="SIGNUP" onclick="signtosql()"/>
+					
+				</form>
+				</div>
+			</div>
     
     
     
-    
-    
-    </div>
+		</div>
+		<?php
+	
+		
+		
+		
+		?>
                 <section id="team2" class="sc-section">
 				<!--	<div class="ui dropdown">
 					  <input type="hidden" name="gender">
@@ -384,7 +447,7 @@ while($row = mysqli_fetch_array($res))
                           document.getElementById("demo").innerHTML = " " + x;
 						  if(x == "Burak Yahşi"){
 							var y = document.getElementById("op1");
-							y.style.display= "unset";
+							y.style.display= "unset"; 
 							document.getElementById("op2").style.display= "none";
 							document.getElementById("op3").style.display= "none";
 							
@@ -400,6 +463,17 @@ while($row = mysqli_fetch_array($res))
 							document.getElementById("op1").style.display= "none";
 							document.getElementById("op2").style.display= "none";								
 							}
+						}
+						function myAjax() {
+						  $.ajax({
+							   type: "POST",
+							   url: 'variablepage.php',
+							   data:{firstdropval,expected_name},
+							   success:function(res) {
+								 console.log(res);
+							   }
+
+						  });
 						}
                     </script>  
 				</section>
@@ -459,6 +533,9 @@ while($row = mysqli_fetch_array($res))
 				<th class="centeredh">ID</th>
 				<th class="centeredh">NAME</th>
 				<th class="centeredh">DEPARTMENT</th>
+				<th class="centeredh">GENDER</th>
+				<th class="centeredh">SALARY</th>
+				<th class="centeredh"><button class="circular ui icon button stt"><i class="icon settings sttic"></i></th>
 			</tr>
 			</thead>
 			<tbody style="color: black;">
@@ -469,19 +546,43 @@ while($row = mysqli_fetch_array($res))
 					$j = 0;
 					while ($row = mysqli_fetch_assoc($res2)) {
 						++$j;
-						echo '<tr>';
-						echo '<td>'. $row['empid'] .'</td>';
+						echo '<tr id="row_'.$j.'">';
+						echo '<td class = "nr" id="sort_'.$j.'">'. $row['empid'] .'</td>';
 						echo '<td class="sc-td" id=' .$j.' onmouseover="mouseFunction(this)" onmouseout="mousefunction2(this)" onclick="clcfnc()">'. $row['empname'] .'</td>';
-						echo '<td>'. $row['dptname'] .'</td>';
+						echo '<td id="depid' .$j.'">'. $row['dptname'] .'</td>';
+						echo '<td id="gender' .$j.'">'. $row['gender'] .'</td>';
+						echo '<td id="salid' .$j.'">'. $row['salary'] .'</td>';
+						echo '<td class="settings_td">'. '<button class="ui inverted blue basic icon button sc-dlbt" id="editfunction_'.$j.'" onclick="editfunction(this.id)" onmouseover="getval(this.id)"><i class="edit icon"></i></button>'.'<button class="ui inverted red basic icon button sc-dlbt" id="delete_'.$j.'" onclick="deleteme(this.id)"><i class="minus circle icon"></i></button>'.'</td>';
 						echo '</tr>';
+
 					}
+						//echo '<tr>';
+						//echo '</tr>';
 				}
+
 			?>
+
 			</tbody>
+			<tfoot>
+			<?php
+			$sum2 = round($sum / $j,2);
+			echo '<tr style="background-color: darkcyan;">';//thead - tr
+				echo '<th class="invisible"></th>';
+				echo '<th class="invisible"></th>';
+				echo '<th class="invisible"></th>';
+				echo '<th class="invisible"></th>';
+				echo '<th>'.$sum2.'</th>';
+				echo '<th class="invisible"></th>';
+			echo '</tr>'; //thead - tr
+			?>
 		</table>
 		</div>
 		</section>
-		
+		<script>//var salarysum = "<?php echo $sum; ?>"</script>
+		<script>
+			
+
+		</script>
 		<script>
 			function mouseFunction(obj) {
 				var elm_id = obj.id;
@@ -500,8 +601,11 @@ while($row = mysqli_fetch_array($res))
 			function clcfnc(obj) {
 				document.getElementById("myDialog").open = true;
 			}
-
 		</script>
+		<script>
+		
+		</script>
+		
 </body>
 
 

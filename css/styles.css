@@ -81,6 +81,53 @@ h1.ui.header{
 .contacth2{
 	text-align: center!important;
 }
+.sc-dlbt{
+	border-radius: 20px!important;
+}
+.sttic{
+	color: white!important;
+}
+.stt{
+	background-color: darkcyan!important;
+}
+.settings_td{
+	width: 15%!important;
+}
+.invisible{
+	background-color: lightgray!important;
+}
+.labels {
+  display: inline-block!important;
+  width: 80px!important;
+  text-align: center!important;
+}​
+.updt {
+	margin-left: 30px!important;
+    margin-top: 10px!important;
+}
+.drop{
+	width: 50%!important;
+}
+.myTable_length{
+	visibility: hidden!important;
+}
+
+.login {
+	background-color: crimson!important;
+	border-radius: 30px!important;	
+}
+.loginbt {
+	margin-top: 5px!important;
+    margin-left: 30px!important;
+	margin-right: 5px!important;
+}
+.signlabel {
+	color: dodgerblue!important;
+}
+
+.modal {
+	width: 35%!important;
+}
 /*css alıntı kod*/
 
 .progress {
